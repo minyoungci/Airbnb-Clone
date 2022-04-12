@@ -21,7 +21,7 @@ class RoomType(AbstractItem):
     """Room type Definition"""
 
     class Meta:
-        verbose_name = "HouseRules"
+        verbose_name = "Roomtype"
 
     pass
 
@@ -55,6 +55,18 @@ class HouseRule(AbstractItem):
     pass
 
 
+class Photo(core_models.TimeStampedModel):
+
+    """Photo Model Definition"""
+
+    caption = models.CharField(max_length=80)
+    file = models.ImageField()
+    room = models.ForeignKey("Room", related_name="photos", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.caption
+
+
 class Room(core_models.TimeStampedModel):
     """Room type Definition"""
 
@@ -83,15 +95,3 @@ class Room(core_models.TimeStampedModel):
 
     def __str__(self):
         return self.name
-
-
-class Photo(core_models.TimeStampedModel):
-
-    """Photo Model Definition"""
-
-    caption = models.CharField(max_length=80)
-    file = models.ImageField()
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.caption
