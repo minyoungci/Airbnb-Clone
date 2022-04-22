@@ -1,4 +1,3 @@
-from email.policy import default
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -32,7 +31,7 @@ class User(AbstractUser):
 
     CURRENCY_CHOICES = ((CURRENCY_USD, "USD"), (CURRENCY_KRW, "KRW"))
 
-    avatar = models.ImageField(blank=True)
+    avatar = models.ImageField(upload_to="avatars", blank=True)
     gender = models.CharField(
         choices=GENDER_CHOICES, max_length=10, blank=True
     )  # null true >> 빈 필드여도 괜찮음
