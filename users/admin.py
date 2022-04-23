@@ -1,14 +1,21 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from rooms import models as room_models
 from . import models
 
 # Register your models here.
+
+
+class Roominline(admin.TabularInline):
+    model = room_models.Room
 
 
 @admin.register(models.User)
 class CustomUserAdmin(UserAdmin):
 
     """Custom User Admin"""
+
+    inlines = (Roominline,)
 
     fieldsets = UserAdmin.fieldsets + (
         (
