@@ -1,4 +1,6 @@
 from django.views.generic import ListView, DetailView
+from django.shortcuts import render
+from django_countries import countries
 from . import models
 
 
@@ -18,3 +20,24 @@ class RoomDetail(DetailView):
     """RoomDetail Definition"""
 
     model = models.Room
+
+
+def search(request):
+    city = request.GET.get("city", "Anywhere")
+    city = str.capitalize(city)
+    country = request.GET.get("country", "KR")
+    room_type = int(request.GET.get("room_type", 0))
+    room_types = models.RoomType.objects.all()
+    # 프론트엔드에 필요한 form 정보
+    form = {
+        "city": city,
+        "s_room_type": room_type,
+        "s_country": country,
+    }
+    # 데이터베이스에 저장되어있는 정보
+    choices = {
+        "countries": countries,
+        "room_types": room_types,
+    }
+
+    return render(request, "rooms/search.html", {**form, **choices})
