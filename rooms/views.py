@@ -9,7 +9,7 @@ class HomeView(ListView):
     """HomeView Definition"""
 
     model = models.Room
-    paginate_by = 10
+    paginate_by = 12
     paginate_orphans = 5
     ordering = "created"
     context_object_name = "rooms"
@@ -84,7 +84,7 @@ class SearchView(View):
 
                 qs = models.Room.objects.filter(**filter_args).order_by("-created")
 
-                paginator = Paginator(qs, 10, orphans=5)
+                paginator = Paginator(qs, 12, orphans=5)
 
                 page = request.GET.get("page", 1)
 
