@@ -1,13 +1,13 @@
-<div class="w-1/4 mb-10 px-2">
+<div class="w-1/4 mb-10 px-2 overflow-hidden">
     <div class="w-full h-64 bg-cover bg-center rounded-lg mb-2" style="background-image: url({{room.first_photo}});"></div>
-    <div class="flex justify-between ">
-        <div>
+    <div class="flex justify-between mb-2">
+        <div class="w-4/5 overflow-hidden flex">
 
             {% if room.host.superhost %}
-                <span class="uppercase font-medium text-xs border border-black text-black rounded py-1 px-1 "> superhost </span>
+                <span class="mr-2 uppercase font-medium text-xs border border-black text-black rounded py-1 px-1 "> superhost </span>
             {% endif %}
 
-            <span class="text-sm text-gray-600  ">{{room.city}}</span>
+            <span class="text-sm text-g\ray-600 block truncate">{{room.city}},{{room.country.name}}</span>
         </div>
         <div>
             <span class="text-sm flex items-center">
@@ -15,4 +15,7 @@
             </span>
         </div>
     </div>
+    <span class="text-black w-11/12 block truncate">
+        {{room.name}}
+    </span>
 </div>
