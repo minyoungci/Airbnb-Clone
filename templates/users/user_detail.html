@@ -15,9 +15,28 @@
             {% endif %}
         </div>
 
-        <span class="text-lg">{{user.bio}}</span>
+        <span class="text-lg mb-5">{{user.bio}}</span>
 
-        <a href="#" class="btn">Edit Profile</a>
+        
+        {% if user == user.obj %}
+            <a href="#" class="btn-link">Edit Profile</a>
+        {% endif %}
+
+
+        <a href="#" class="btn-link">Edit Profile</a>
 
     </div>
+
+    
+    {% if user_obj.rooms.count > 0 %}
+        <div class="container mx-auto pb-10 flex flex-col items-center"> 
+            <h3 class="mb-12 text-2xl"> {{user_obj.first_name}}'s Rooms</h3>
+                <div class="flex flex-wrap -mx-40 mb-10">
+                    {% for room in user_obj.rooms.all %}
+                        {% include 'mixins/room_card.html' with room=room %}
+                    {% endfor %}
+            </div>
+    </div>
+    {% endif %}
+        
 {% endblock content %}
