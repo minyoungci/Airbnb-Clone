@@ -1,4 +1,4 @@
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
@@ -174,9 +174,10 @@ def kakao_callback(request):
             raise KakaoException("Please also give me your email")
         profile = kakao_account["profile"]
         nickname = profile["nickname"]
-        profile_image = (
-            profile_json.get("kakao_account").get("profile").get("profile_image_url")
-        )
+        properties = profile_json.get("kakao_account").get("profile")
+        nickname = properties.get("nickname")
+        profile_image = properties.get("profile_image_url")
+
         try:
             user = models.User.objects.get(email=email)
             if user.login_method != models.User.LOGIN_KAKAO:
@@ -186,7 +187,7 @@ def kakao_callback(request):
                 email=email,
                 username=email,
                 first_name=nickname,
-                login_method=models.User.LOGING_KAKAO,
+                login_method=models.User.LOGIN_KAKAO,
                 email_verified=True,
             )
             user.set_unusable_password()
@@ -194,7 +195,7 @@ def kakao_callback(request):
             if profile_image is not None:
                 photo_request = requests.get(profile_image)
                 user.avatar.save(
-                    f"{nickname}-avatar", ContentFile(photo_request.content)
+                    f"{nickname}-avatar.jpg", ContentFile(photo_request.content)
                 )
         messages.success(request, f"Welcome back {user.first_name}")
         login(request, user)
@@ -209,3 +210,22 @@ class UserProfileView(DetailView):
 
     model = models.User
     context_object_name = "user_obj"
+
+
+class UpdateProfileView(UpdateView):
+
+    model = models.User
+    template_name = "users/update-profile.html"
+    fields = (
+        "first_name",
+        "last_name",
+        "avatar",
+        "gender",
+        "bio",
+        "birthdate",
+        "language",
+        "currency",
+    )
+
+    def get_object(self, queryset=None):
+        return self.request.user
