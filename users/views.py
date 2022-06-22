@@ -1,19 +1,20 @@
 from django.views.generic import FormView, DetailView, UpdateView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.views import PasswordChangeView
 from django.shortcuts import redirect, reverse
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from . import forms, models
+from . import forms, models, mixins
 import os
 import requests
 from django.core.files.base import ContentFile
 
 
-class LoginView(FormView):
+class LoginView(mixins.LoggedOutOnlyView, FormView):
 
     template_name = "users/login.html"
     form_class = forms.LoginForm
-    success_url = reverse_lazy("core:home")
 
     def form_vaild(self, form):
         email = form.cleaned_data.get("email")
@@ -23,6 +24,13 @@ class LoginView(FormView):
             login(self.request, user)
         return super().form_valid(form)
 
+    def get_success_url(self):
+        next_arg = self.request.GET.get("next")
+        if next_arg is not None:
+            return next_arg
+        else:
+            return reverse("core:home")
+
 
 def log_out(request):
     messages.info(request, "See you again ")
@@ -30,7 +38,7 @@ def log_out(request):
     return redirect(reverse("core:home"))
 
 
-class SignupView(FormView):
+class SignupView(mixins.LoggedOutOnlyView, FormView):
 
     template_name = "users/signup.html"
     form_class = forms.SignUpForm
@@ -212,7 +220,7 @@ class UserProfileView(DetailView):
     context_object_name = "user_obj"
 
 
-class UpdateProfileView(UpdateView):
+class UpdateProfileView(mixins.LoggedInOnlyView, SuccessMessageMixin, UpdateView):
 
     model = models.User
     template_name = "users/update-profile.html"
@@ -227,5 +235,24 @@ class UpdateProfileView(UpdateView):
         "currency",
     )
 
+    success_message = "Profile Updated"
+
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class UpdatePasswordView(
+    mixins.LoggedInOnlyView,
+    SuccessMessageMixin,
+    PasswordChangeView,
+    mixins.EmailLoginOnlyView,
+):
+
+    model = models.User
+    template_name = "users/update-password.html"
+    form_class = forms.UpdatePasswordForm
+
+    success_message = "Password Updated"
+
+    def get_success_url(self):
+        return self.request.user.get_absolute_url()
